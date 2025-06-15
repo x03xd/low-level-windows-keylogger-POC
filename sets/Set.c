@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "Set.h"
-#include "../utils.h"
+#include "utils.h"
 
 
 Set* createSet() {

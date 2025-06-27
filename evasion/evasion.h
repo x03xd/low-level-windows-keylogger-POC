@@ -23,6 +23,10 @@ typedef struct _PEB {
 extern PPEB _getPeb(void);
 extern BYTE _checkDebugger(void);
 
+/**
+ * @brief Verifies if the program is running in debug mode.
+ *
+ */
 void isDebuggerModeOn();
 
 #endif

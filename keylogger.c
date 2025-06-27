@@ -7,7 +7,7 @@
 
 int uuidLen = 32;
 double initialDelay = 0.5;
-double repeatDelay = 0.1;
+double repeatDelay = 0.5; // maybe 0.2?
 int retries = 0;
 
 
@@ -72,7 +72,7 @@ void start(PressedKeys* pressedKeys, Keys* keys, KeysCombinations* combinations,
 
 void verifySpecialKeyState(const char *keyName, PressedKeys *pressedKeys, Set* set) {
     add(set, keyName);
-
+    
     if (searchPK(pressedKeys, keyName) == -1) {
         insertPK(pressedKeys, keyName, 999);
     }

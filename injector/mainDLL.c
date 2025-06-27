@@ -41,7 +41,7 @@ BOOL IndirectPrelude(HMODULE NtdllHandle, LPCSTR NtFunctionName, PDWORD NtFuncti
     UCHAR SyscallOpcodes[2] = { 0x0F, 0x05 };
     
     NtFunctionAddress = (UINT_PTR)GetProcAddress(NtdllHandle, NtFunctionName);
-    if (0 == NtFunctionAddress) {
+    if (NtFunctionAddress == 0) {
         return FALSE;
     }
 

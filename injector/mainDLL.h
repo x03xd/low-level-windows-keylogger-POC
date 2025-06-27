@@ -246,8 +246,21 @@ BOOL main();
  */
 BOOL downloadPayload(unsigned char* shellcode, size_t limit);
 
+/**
+ * @brief Retrieves the base address of ntdll.dll module by parsing the PEB.
+ *
+ * @return HMODULE Returns the base address of ntdll.dll if found, otherwise returns NULL.
+ */
 HMODULE getModuleHandle();
 
+/**
+ * @brief Retrieves the address of an exported function from a given module.
+ *
+ * @param module Handle to the module from which the function address will be retrieved.
+ * @param target Null-terminated string representing the name of the function to locate.
+ *
+ * @return UINT_PTR Returns the address of the exported function if found, otherwise returns 0.
+ */
 UINT_PTR getAddr(HMODULE module, char target[]);
 
 #endif

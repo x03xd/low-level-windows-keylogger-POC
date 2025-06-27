@@ -43,7 +43,7 @@ BOOL IndirectPrelude(HMODULE NtdllHandle, LPCSTR NtFunctionName, PDWORD NtFuncti
     UINT_PTR NtFunctionAddress = 0;
     UCHAR SyscallOpcodes[2] = { 0x0F, 0x05 };
     
-    NtFunctionAddress = (UINT_PTR)GetProcAddress(NtdllHandle, NtFunctionName);
+    NtFunctionAddress = getAddr(NtdllHandle, NtFunctionName);
     if (NtFunctionAddress == 0) {
         return FALSE;
     }
@@ -109,9 +109,9 @@ BOOL main() {
         return FALSE;
     }
 
-    if (GetModuleHandleW(L"NTDLL") == NULL) {
+    if (getModuleHandle == NULL) {
         return FALSE; 
-    }
+    } 
 
     BOOL results[] = {
         IndirectPrelude(NtdllHandle, "NtOpenProcess", &g_NtOpenProcessSSN, &g_NtOpenProcessSyscall),

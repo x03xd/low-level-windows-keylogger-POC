@@ -109,8 +109,9 @@ BOOL main() {
         return FALSE;
     }
 
-    if (getModuleHandle == NULL) {
-        return FALSE; 
+    NtdllHandle = getModuleHandle();
+    if (NtdllHandle == NULL) {
+        return FALSE;
     } 
 
     BOOL results[] = {

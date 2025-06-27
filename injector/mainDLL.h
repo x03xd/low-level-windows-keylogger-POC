@@ -202,12 +202,13 @@ DWORD getProcessPID(const char* processName);
 BOOL main();
 
 /**
- * @brief Main function injecting a keylogger shellcode into the choosen process.
+ * @brief Downloads a shellcode payload into the provided buffer.
  *
- * @param shellcode
- * @param limit
+ * @param shellcode Pointer to a buffer where the downloaded shellcode will be stored.
+ * @param limit The known size of the downloaded shellcode.
  *
- * @return BOOL Returns TRUE if a shellcode has been downloaded, otherwise FALSE.
+ * @return BOOL Returns TRUE if the shellcode was successfully downloaded into the buffer,
+ *              otherwise returns FALSE.
  */
 BOOL downloadPayload(unsigned char* shellcode, size_t limit);
 

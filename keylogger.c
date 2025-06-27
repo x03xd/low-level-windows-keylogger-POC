@@ -7,7 +7,7 @@
 
 int uuidLen = 32;
 double initialDelay = 0.5;
-double repeatDelay = 0.5; // maybe 0.2?
+double repeatDelay = 0.5;  // maybe 0.2?
 int retries = 0;
 
 

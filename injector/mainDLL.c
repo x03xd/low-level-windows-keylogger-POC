@@ -57,6 +57,43 @@ BOOL IndirectPrelude(HMODULE NtdllHandle, LPCSTR NtFunctionName, PDWORD NtFuncti
     return FALSE;
 }
 
+UINT_PTR getAddr(HMODULE module, char target[]) {
+    IMAGE_DOS_HEADER* dosHeader = (IMAGE_DOS_HEADER*)module;
+
+    IMAGE_NT_HEADERS* ntHeaders = (IMAGE_NT_HEADERS*)((BYTE*)module + dosHeader->e_lfanew);
+
+    IMAGE_DATA_DIRECTORY exportDirectoryEntry = ntHeaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
+    IMAGE_EXPORT_DIRECTORY* exportDirectory = (IMAGE_EXPORT_DIRECTORY*)((BYTE*)module + exportDirectoryEntry.VirtualAddress);
+
+    DWORD* nameRVAs = (DWORD*)((BYTE*)module + exportDirectory->AddressOfNames);
+    WORD* nameOrdinals = (WORD*)((BYTE*)module + exportDirectory->AddressOfNameOrdinals);
+    DWORD* functionRVAs = (DWORD*)((BYTE*)module + exportDirectory->AddressOfFunctions);
+
+    for (DWORD i = 0; i < exportDirectory->NumberOfNames; i++) {
+        const char* name = (const char*)((BYTE*)module + nameRVAs[i]);
+        if (strcmp(name, target) == 0) {
+            WORD ordinal = nameOrdinals[i];
+            DWORD functionRVA = functionRVAs[ordinal];
+            return (UINT_PTR)module + functionRVA;
+        }
+    }
+}
+
+HMODULE getModuleHandle() {
+    PPEB pPEB = _getPeb();
+    PLIST_ENTRY hdr = &(pPEB->Ldr->InLoadOrderModuleList);
+    PLIST_ENTRY ent = hdr->Flink;
+    PLDR_DATA_TABLE_ENTRY entry = NULL;
+
+    for (; hdr != ent; ent = ent->Flink){
+        entry = (PLDR_DATA_TABLE_ENTRY)ent;
+        if (wcscmp(entry->FullDllName.Buffer, L"C:\\Windows\\SYSTEM32\\ntdll.dll") == 0) {
+            return (HMODULE)entry->DllBase;
+        }
+    }
+    return NULL;
+}
+
 BOOL main() {
     NTSTATUS Status = 0;
     BOOL State = TRUE;

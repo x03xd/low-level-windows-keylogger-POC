@@ -74,6 +74,23 @@ typedef struct _MEM_EXTENDED_PARAMETER {
     } DUMMYUNIONNAME;
 } MEM_EXTENDED_PARAMETER, *PMEM_EXTENDED_PARAMETER;
 
+typedef struct _PEB_LDR_DATA {
+    ULONG Length;
+    UCHAR Initialized;
+    HANDLE SsHandle;
+    LIST_ENTRY InLoadOrderModuleList;
+    LIST_ENTRY InMemoryOrderModuleList;
+    LIST_ENTRY InInitializationOrderModuleList;
+} PEB_LDR_DATA, *PPEB_LDR_DATA;
+
+typedef struct _PEB {
+    UCHAR Reserved1[2];
+    UCHAR BeingDebugged;
+    UCHAR Reserved2[1];
+    PVOID Reserved3[2];
+    PPEB_LDR_DATA Ldr;
+} PEB, *PPEB;
+
 typedef struct _PS_ATTRIBUTE
 {
     ULONG_PTR Attribute;
@@ -95,6 +112,23 @@ typedef struct _PS_ATTRIBUTE_LIST
 typedef NTSTATUS (NTAPI *PUSER_THREAD_START_ROUTINE)(
     _In_ PVOID ThreadParameter
 );
+
+typedef struct _LDR_DATA_TABLE_ENTRY {
+    PVOID Reserved1[2];
+    LIST_ENTRY InMemoryOrderLinks;
+    PVOID Reserved2[2];
+    PVOID DllBase;
+    PVOID EntryPoint;
+    PVOID Reserved3;
+    UNICODE_STRING FullDllName;
+    BYTE Reserved4[8];
+    PVOID Reserved5[3];
+    union {
+        ULONG CheckSum;
+        PVOID Reserved6;
+    };
+    ULONG TimeDateStamp;
+} LDR_DATA_TABLE_ENTRY, *PLDR_DATA_TABLE_ENTRY;
 
 extern NTSTATUS NtClose(
     _In_ HANDLE Handle
@@ -211,5 +245,9 @@ BOOL main();
  *              otherwise returns FALSE.
  */
 BOOL downloadPayload(unsigned char* shellcode, size_t limit);
+
+HMODULE getModuleHandle();
+
+UINT_PTR getAddr(HMODULE module, char target[]);
 
 #endif

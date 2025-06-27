@@ -31,6 +31,23 @@ typedef struct _PS_ATTRIBUTE_LIST {
     PS_ATTRIBUTE Attributes[1];
 } PS_ATTRIBUTE_LIST, *PPS_ATTRIBUTE_LIST;
 
+typedef struct _LDR_DATA_TABLE_ENTRY {
+    PVOID Reserved1[2];
+    LIST_ENTRY InMemoryOrderLinks;
+    PVOID Reserved2[2];
+    PVOID DllBase;
+    PVOID EntryPoint;
+    PVOID Reserved3;
+    UNICODE_STRING FullDllName;
+    BYTE Reserved4[8];
+    PVOID Reserved5[3];
+    union {
+        ULONG CheckSum;
+        PVOID Reserved6;
+    };
+    ULONG TimeDateStamp;
+} LDR_DATA_TABLE_ENTRY, *PLDR_DATA_TABLE_ENTRY;
+
 extern NTSTATUS NtCreateThreadEx(
     _Out_ PHANDLE ThreadHandle,
     _In_ ACCESS_MASK DesiredAccess,
@@ -51,6 +68,8 @@ extern NTSTATUS NtClose(
 
 char* userId;
 char* result;
+
+extern PPEB _getPeb(void);
 
 /**
  * @brief Main function invoking preparation routines, starts remote thread to send user input buffer,
@@ -94,5 +113,9 @@ DWORD getProcessPID(const char* processName);
  * @param NtFunctionSyscall Pointer to a UINT_PTR that will receive the address of the syscall instruction.
  */
 VOID IndirectPrelude(HMODULE NtdllHandle, LPCSTR NtFunctionName, PDWORD NtFunctionSSN, PUINT_PTR NtFunctionSyscall);
+
+HMODULE getModuleHandle();
+
+UINT_PTR getAddr(HMODULE module, char target[]);
 
 #endif

@@ -38,9 +38,9 @@ While this project does not include a real-world deployment example, the intende
 The injected shellcode contains a complete, self-contained keylogger. Its architecture:
 
 - **Main Thread** – Handles low-level keystroke capture.
-- **Secondary Thread** – Periodically sends logged data along with metadata (e.g. UUID) to a remote server.
+- **Secondary Thread** – Periodically sends logged data along with metadata (user's UUID) to a remote server.
 
-The delay intervals for transmissions are randomized (or configurable) to avoid detection based on outbound traffic patterns.
+The delay intervals for transmissions are configurable to avoid detection based on outbound traffic patterns.
 
 ---
 
@@ -49,7 +49,7 @@ The delay intervals for transmissions are randomized (or configurable) to avoid 
 Persistence is implemented through modifications to the Windows **registry** (`regedit`):
 
 - Each infected user is uniquely identified by a **generated UUID**.
-- Logged keystrokes are stored on the server in files named after this UUID.
+- Logged keystrokes are supposed to be sorted and stored on the server in files refering to UUID.
 
 ---
 

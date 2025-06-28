@@ -10,7 +10,7 @@ The **keylogger** is a proof-of-concept developed entirely from scratch. The pri
 
 ---
 
-## 🧩 1. Core Components
+## 1. Core Components
 
 This repository consists of two components that work together as part of a malware deployment chain:
 
@@ -21,7 +21,7 @@ Each component serves a distinct role and is described below.
 
 ---
 
-## 🧪 2. How the Injector Works
+## 2. How the Injector Works
 
 The injector is designed to operate in conjunction with **DLL-based malware techniques**, such as *DLL proxying*.
 
@@ -33,7 +33,7 @@ While this project does not include a real-world deployment example, the intende
 
 ---
 
-## ⌨️ 3. How the Keylogger Works
+## ⌨3. How the Keylogger Works
 
 The injected shellcode contains a complete, self-contained keylogger. Its architecture:
 
@@ -44,7 +44,7 @@ The delay intervals for transmissions are configurable to avoid detection based 
 
 ---
 
-## 🛠 4. Persistence via Regedit
+## 4. Persistence via Regedit
 
 Persistence is implemented through modifications to the Windows **registry** (`regedit`):
 
@@ -53,9 +53,9 @@ Persistence is implemented through modifications to the Windows **registry** (`r
 
 ---
 
-## 🕵️‍♂️ 5. Used Evasion Techniques
+## 5. Used Evasion Techniques
 
-### 🚫 Avoiding High-Level Win32 API
+### Avoiding High-Level Win32 API
 
 The project avoids standard API calls and instead uses **indirect syscalls** to bypass EDR monitoring mechanisms.  
 EDRs typically hook functions inside `ntdll.dll` to detect suspicious behavior in user space.  
@@ -63,11 +63,11 @@ This implementation jumps directly to unhooked system call stubs to evade detect
 
 ---
 
-### ⚠️ Common Suspicious Syscalls
+### Common Suspicious Syscalls
 
 Below are examples of system calls often flagged by EDRs — especially when used with specific parameters:
 
-#### 🧠 `NtAllocateVirtualMemory`
+#### `NtAllocateVirtualMemory`
 
 > Allocates memory in the current or remote process.
 
@@ -79,7 +79,7 @@ Below are examples of system calls often flagged by EDRs — especially when use
 
 ---
 
-#### ✍️ `NtWriteVirtualMemory`
+#### `NtWriteVirtualMemory`
 
 > Writes data into the memory space of another process.
 
@@ -91,7 +91,7 @@ Below are examples of system calls often flagged by EDRs — especially when use
 
 ---
 
-#### 🔐 `NtProtectVirtualMemory`
+#### `NtProtectVirtualMemory`
 
 > Changes memory protection on a memory region.
 
@@ -102,7 +102,7 @@ Below are examples of system calls often flagged by EDRs — especially when use
 
 ---
 
-#### 🧵 `NtCreateThreadEx`
+#### `NtCreateThreadEx`
 
 > Creates a thread in the current or a remote process.
 
@@ -114,3 +114,36 @@ Below are examples of system calls often flagged by EDRs — especially when use
 
 ---
 
+### Staging Payload
+
+Hardcoding a keylogger payload directly into the binary would be easily flagged by static analysis tools and antivirus engines due to its obvious malicious footprint.
+To evade detection, the payload is dynamically staged — downloaded at runtime from a remote server using low-level socket communication.
+The staging mechanism includes a retrying system to handle temporary network failures, ensuring higher reliability and operational resilience. 
+
+---
+
+### Replacing common High-Level Win32 API with custom versions
+
+Common high-level Windows API functions like `GetModuleHandleW` and `GetProcAddress` are frequently monitored or hooked by EDR solutions.
+To bypass such monitoring, custom equivalents of these functions were implemented from scratch, directly parsing Windows internal structures such as the PE headers, PEB, and module lists.
+
+---
+
+### 9. To Do
+
+Planned improvements and additions to enhance stealth, reliability, and flexibility:
+
+Implement string obfuscation
+
+Add self-deletion mechanism
+Enable the binary to delete itself after execution, reducing forensic footprint and improving operational security.
+
+Unpacking mechanism (?)
+
+Simulation of attack using DLL proxying or familiar technique
+
+---
+
+### 10. Notes & Considerations
+
+Some functions are duplicated between the injector and keylogger components, as they are compiled separately and operate as independent entities.

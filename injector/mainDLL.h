@@ -194,6 +194,8 @@ extern NTSTATUS NtWaitForSingleObject(
     _In_opt_ PLARGE_INTEGER Timeout
 );
 
+extern PPEB _getPeb(void);
+
 /**
  * @brief Retrieves the syscall number and syscall instruction address for a given NT function.
  *
@@ -203,7 +205,7 @@ extern NTSTATUS NtWaitForSingleObject(
  * @param NtFunctionSyscall Pointer to a UINT_PTR that will receive the address of the syscall instruction.
  * @return BOOL Returns TRUE if there is syscall instruction at the pointed memory address, otherwise FALSE.
  */
-BOOL IndirectPrelude(HMODULE NtdllHandle, LPCSTR NtFunctionName, PDWORD NtFunctionSSN, PUINT_PTR NtFunctionSyscall);
+BOOL IndirectPrelude(HMODULE NtdllHandle, char NtFunctionName[], PDWORD NtFunctionSSN, PUINT_PTR NtFunctionSyscall);
 
 /**
  * @brief Entry point for the DLL.

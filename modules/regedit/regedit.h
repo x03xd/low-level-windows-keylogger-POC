@@ -2,7 +2,7 @@
 #define REGEDIT_H
 
 #include <windows.h>
-#include "shared.h"
+#include "shared/shared.h"
 
 typedef enum _KEY_VALUE_INFORMATION_CLASS {
     KeyValueBasicInformation,

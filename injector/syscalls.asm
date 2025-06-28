@@ -72,3 +72,9 @@ section .text
         mov eax, [g_NtWaitForSingleObjectSSN]
         jmp qword [g_NtWaitForSingleObjectSyscall]
         ret
+
+    global _getPeb
+
+_getPeb:
+    mov rax, gs:[0x60] 
+    ret

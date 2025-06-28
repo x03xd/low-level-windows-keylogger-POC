@@ -18,3 +18,16 @@ section .text
         mov eax, [g_NtCloseSSN]
         jmp qword [g_NtCloseSyscall]
         ret
+
+    global _getPeb
+    global _checkDebugger
+
+_getPeb:
+    mov rax, gs:[0x60] 
+    ret
+
+_checkDebugger:
+    xor eax, eax           
+    call _getPeb       
+    movzx eax, byte [rax+0x2] 
+    ret

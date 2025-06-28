@@ -1,5 +1,4 @@
 #include <stdbool.h>
-#include <stdio.h>
 #include <time.h>
 #include <string.h>
 #include <winsock2.h>
@@ -38,7 +37,7 @@ DWORD getProcessPID(const char* processName) {
     return 0;
 }
 
-BOOL IndirectPrelude(HMODULE NtdllHandle, LPCSTR NtFunctionName, PDWORD NtFunctionSSN, PUINT_PTR NtFunctionSyscall) {
+BOOL IndirectPrelude(HMODULE NtdllHandle, char NtFunctionName[], PDWORD NtFunctionSSN, PUINT_PTR NtFunctionSyscall) {
     DWORD SyscallNumber = 0;
     UINT_PTR NtFunctionAddress = 0;
     UCHAR SyscallOpcodes[2] = { 0x0F, 0x05 };

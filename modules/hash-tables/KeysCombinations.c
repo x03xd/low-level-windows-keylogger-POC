@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "KeysCombinations.h"
-#include "utils.h"
+#include "hash-tables/KeysCombinations.h"
+#include "utils/utils.h"
 
 
 KeysCombinations* createCombinationTable() {

@@ -15,6 +15,23 @@ typedef NTSTATUS (NTAPI *PUSER_THREAD_START_ROUTINE)(
     _In_ PVOID ThreadParameter
 );
 
+typedef struct _PEB_LDR_DATA {
+    ULONG Length;
+    UCHAR Initialized;
+    HANDLE SsHandle;
+    LIST_ENTRY InLoadOrderModuleList;
+    LIST_ENTRY InMemoryOrderModuleList;
+    LIST_ENTRY InInitializationOrderModuleList;
+} PEB_LDR_DATA, *PPEB_LDR_DATA;
+
+typedef struct _PEB {
+    UCHAR Reserved1[2];
+    UCHAR BeingDebugged;
+    UCHAR Reserved2[1];
+    PVOID Reserved3[2];
+    PPEB_LDR_DATA Ldr;
+} PEB, *PPEB;
+
 typedef struct _PS_ATTRIBUTE {
     ULONG_PTR Attribute;
     SIZE_T Size;
@@ -66,10 +83,11 @@ extern NTSTATUS NtClose(
     IN HANDLE Handle
 );
 
+extern PPEB _getPeb(void);
+extern BYTE _checkDebugger(void);
+
 char* userId;
 char* result;
-
-extern PPEB _getPeb(void);
 
 /**
  * @brief Main function invoking preparation routines, starts remote thread to send user input buffer,
@@ -112,7 +130,7 @@ DWORD getProcessPID(const char* processName);
  * @param NtFunctionSSN Pointer to a DWORD that will receive the system call number (SSN).
  * @param NtFunctionSyscall Pointer to a UINT_PTR that will receive the address of the syscall instruction.
  */
-VOID IndirectPrelude(HMODULE NtdllHandle, LPCSTR NtFunctionName, PDWORD NtFunctionSSN, PUINT_PTR NtFunctionSyscall);
+VOID IndirectPrelude(HMODULE NtdllHandle, char NtFunctionName[], PDWORD NtFunctionSSN, PUINT_PTR NtFunctionSyscall);
 
 /**
  * @brief Retrieves the base address of ntdll.dll module by parsing the PEB.
@@ -130,5 +148,11 @@ HMODULE getModuleHandle();
  * @return UINT_PTR Returns the address of the exported function if found, otherwise returns 0.
  */
 UINT_PTR getAddr(HMODULE module, char target[]);
+
+/**
+ * @brief Verifies if the program is running in debug mode.
+ *
+ */
+void isDebuggerModeOn();
 
 #endif

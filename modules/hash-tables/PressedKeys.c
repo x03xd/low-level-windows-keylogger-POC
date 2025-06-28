@@ -1,16 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "Keys.h"
-#include "utils.h"
+#include "hash-tables/PressedKeys.h"
+#include "utils/utils.h"
 
 
-Keys* createTable() {
-    Keys *table = malloc(sizeof(Keys));
+PressedKeys* createTablePK() {
+    PressedKeys *table = malloc(sizeof(PressedKeys));
     if (table == NULL) {
         return NULL;
     }
-    table->entries = calloc(KEYS_SIZE, sizeof(Entry*));
+    table->entries = calloc(PRESSED_KEYS_SIZE, sizeof(PressedEntry*));
     if (table->entries == NULL) {
         free(table);
         return NULL;
@@ -18,11 +18,11 @@ Keys* createTable() {
     return table;
 }
 
-void freeTable(Keys *table) {
-    for (int i = 0; i < KEYS_SIZE; i++) {
-        Entry *entry = table->entries[i];
+void freeTablePK(PressedKeys *table) {
+    for (int i = 0; i < PRESSED_KEYS_SIZE; i++) {
+        PressedEntry *entry = table->entries[i];
         while (entry != NULL) {
-            Entry *temp = entry;
+            PressedEntry *temp = entry;
             entry = entry->next;
             free(temp->key);
             free(temp);
@@ -32,18 +32,18 @@ void freeTable(Keys *table) {
     free(table);
 }
 
-void insert(Keys *table, const char *key, const int value) {
-    unsigned int slot = hash(key, KEYS_SIZE);
-    Entry *entry = table->entries[slot];
+void insertPK(PressedKeys *table, const char *key, const int value) {
+    unsigned int slot = hash(key, PRESSED_KEYS_SIZE);
+    PressedEntry *entry = table->entries[slot];
 
     if (entry == NULL) {
-        entry = malloc(sizeof(Entry));
+        entry = malloc(sizeof(PressedEntry));
         entry->key = strdup(key);
         entry->value = value;
         entry->next = NULL;
         table->entries[slot] = entry;
     } else {
-        Entry *prev;
+        PressedEntry *prev;
         while (entry != NULL) {
             if (strcmp(entry->key, key) == 0) {
                 entry->value = value;
@@ -52,7 +52,7 @@ void insert(Keys *table, const char *key, const int value) {
             prev = entry;
             entry = entry->next;
         }
-        entry = malloc(sizeof(Entry));
+        entry = malloc(sizeof(PressedEntry));
         entry->key = strdup(key);
         entry->value = value;
         entry->next = NULL;
@@ -60,10 +60,10 @@ void insert(Keys *table, const char *key, const int value) {
     }
 }
 
-int search(Keys *table, const char *key) {
-    unsigned int slot = hash(key, KEYS_SIZE);
-    Entry *entry = table->entries[slot];
-
+int searchPK(PressedKeys *table, const char *key) {
+    unsigned int slot = hash(key, PRESSED_KEYS_SIZE);
+    PressedEntry *entry = table->entries[slot];
+    
     while (entry != NULL) {
         if (strcmp(entry->key, key) == 0) {
             return entry->value;
@@ -73,10 +73,10 @@ int search(Keys *table, const char *key) {
     return -1;
 }
 
-void delete(Keys *table, const char *key) {
-    unsigned int slot = hash(key, KEYS_SIZE);
-    Entry *entry = table->entries[slot];
-    Entry *prev = NULL;
+void deletePK(PressedKeys *table, const char *key) {
+    unsigned int slot = hash(key, PRESSED_KEYS_SIZE);
+    PressedEntry *entry = table->entries[slot];
+    PressedEntry *prev = NULL;
 
     while (entry != NULL && strcmp(entry->key, key) != 0) {
         prev = entry;

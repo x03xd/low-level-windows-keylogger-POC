@@ -1,11 +1,10 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
-#include "utils.h"
-#include "regedit.h"
-#include <lmcons.h>
+#include "utils/utils.h"
+#include "regedit/regedit.h"
+//#include <lmcons.h>
 
-// https://redcanary.com/blog/threat-detection/windows-registry-attacks-threat-detection/
 
 LPBYTE getOrCreateAndGetUserId() {
     LPBYTE existingUUID = queryRegedit(L"WindowsSecretKernelKey"); // WindowsSecretKernelKey sounds like it's not suspicious, right?

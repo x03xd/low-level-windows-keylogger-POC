@@ -1,9 +1,10 @@
 #include <time.h>
 #include <string.h>
-#include "utils.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include "keylogger.h"
+#include "utils/utils.h"
+#include "keylogger/keylogger.h"
+
 
 int uuidLen = 32;
 double initialDelay = 0.5;

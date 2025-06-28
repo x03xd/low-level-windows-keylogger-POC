@@ -33,7 +33,7 @@ While this project does not include a real-world deployment example, the intende
 
 ---
 
-## ⌨3. How the Keylogger Works
+## 3. How the Keylogger Works
 
 The injected shellcode contains a complete, self-contained keylogger. Its architecture:
 
@@ -140,7 +140,7 @@ Enable the binary to delete itself after execution, reducing forensic footprint 
 
 Unpacking mechanism (?)
 
-Simulation of attack using DLL proxying or familiar technique
+Simulation of an attack using DLL proxying or a similar technique
 
 ---
 

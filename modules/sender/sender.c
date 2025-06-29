@@ -23,7 +23,7 @@ void send_(void* param) {
     struct sockaddr_in clientAddress;
     clientAddress.sin_family = AF_INET;
     clientAddress.sin_port = htons(4321); 
-    clientAddress.sin_addr.s_addr = inet_addr("127.0.0.9");  // testing server, string should be obfuscated
+    clientAddress.sin_addr.s_addr = inet_addr("127.0.0.9");
 
     socketResult = connect(clientSocket, (struct sockaddr*)&clientAddress, sizeof(clientAddress));
     if (socketResult == SOCKET_ERROR) {

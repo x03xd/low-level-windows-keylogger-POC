@@ -129,15 +129,17 @@ To bypass such monitoring, custom equivalents of these functions were implemente
 
 ### 9. To Do
 
-Implement string obfuscation
+Implement string obfuscation.
 
-Add self-deletion mechanism
+Add self-deletion mechanism.
 
-Unpacking mechanism (?)
+Unpacking mechanism (?).
 
-Simulation of an attack using DLL proxying or a similar technique
+Simulation of an attack using DLL proxying or a similar technique.
 
+Add smooth handling of certain operations with retry logic instead of exiting immediately.
 
+Replace user identification with UUID stored in the registry.
 
 ---
 

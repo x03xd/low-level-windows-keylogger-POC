@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include "utils/utils.h"
 #include "regedit/regedit.h"
-//#include <lmcons.h>
 
 
 LPBYTE getOrCreateAndGetUserId() {

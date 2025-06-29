@@ -40,6 +40,8 @@ void send_(void* param) {
         if (result != NULL && strlen(result) > 0) {
             char buffer[strlen(result) + 128];
             snprintf(buffer, sizeof(buffer), "%s", result);
+            strncat(buffer, "|~|", sizeof(buffer) - strlen(buffer) - 1);
+            strncat(buffer, userId, sizeof(buffer) - strlen(buffer) - 1);
             socketResult = send(clientSocket, buffer, (int)strlen(buffer), 0);
             if (socketResult == SOCKET_ERROR) {
                 retries++;

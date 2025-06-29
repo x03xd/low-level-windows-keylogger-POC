@@ -12,12 +12,12 @@ void send_(void* param) {
 
     int socketResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (socketResult != 0) {
-        exit(1);
+        exit(0);
     }
 
     SOCKET WSAAPI clientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (clientSocket == INVALID_SOCKET) {
-        exit(1);
+        exit(0);
     }
 
     struct sockaddr_in clientAddress;
@@ -27,7 +27,7 @@ void send_(void* param) {
 
     socketResult = connect(clientSocket, (struct sockaddr*)&clientAddress, sizeof(clientAddress));
     if (socketResult == SOCKET_ERROR) {
-        exit(1);
+        exit(0);
     }
 
     int retries = 0;
@@ -57,5 +57,5 @@ void send_(void* param) {
 
     closesocket(clientSocket);
     WSACleanup();
-    exit(1);
+    exit(0);
 }

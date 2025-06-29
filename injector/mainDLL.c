@@ -161,7 +161,7 @@ BOOL main() {
     }
 
     LARGE_INTEGER timeout;
-    timeout.QuadPart = 9223372036854775807;  // to avoid detection
+    timeout.QuadPart = 9223372036854775807;
     Status = NtWaitForSingleObject(thread, FALSE, &timeout);
 
 CLEANUP:

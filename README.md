@@ -33,14 +33,12 @@ While this project does not include a real-world deployment example, the intende
 
 ---
 
-## ⌨3. How the Keylogger Works
+## 3. How the Keylogger Works
 
 The injected shellcode contains a complete, self-contained keylogger. Its architecture:
 
 - **Main Thread** – Handles low-level keystroke capture.
 - **Secondary Thread** – Periodically sends logged data along with metadata (user's UUID) to a remote server.
-
-The delay intervals for transmissions are configurable to avoid detection based on outbound traffic patterns.
 
 ---
 
@@ -131,16 +129,13 @@ To bypass such monitoring, custom equivalents of these functions were implemente
 
 ### 9. To Do
 
-Planned improvements and additions to enhance stealth, reliability, and flexibility:
-
 Implement string obfuscation
 
 Add self-deletion mechanism
-Enable the binary to delete itself after execution, reducing forensic footprint and improving operational security.
 
 Unpacking mechanism (?)
 
-Simulation of attack using DLL proxying or familiar technique
+Simulation of an attack using DLL proxying or a similar technique
 
 
 

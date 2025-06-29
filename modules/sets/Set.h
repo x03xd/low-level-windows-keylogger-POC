@@ -18,16 +18,4 @@ void freeSetEntries(Set *set);
 void add(Set *set, const char *key);
 int contains(Set *set, const char *key);
 
-/*
-+-------------------------+
-| Set                     |
-+-------------------------+
-| entries[0] -> Entry1 -> Entry2 -> ... -> NULL
-| entries[1] -> Entry3 -> NULL
-| entries[2] -> NULL
-| entries[3] -> Entry4 -> Entry5 -> ... -> NULL
-| ...       -> ...
-+-------------------------+
-*/
-
 #endif

@@ -40,8 +40,6 @@ The injected shellcode contains a complete, self-contained keylogger. Its archit
 - **Main Thread** – Handles low-level keystroke capture.
 - **Secondary Thread** – Periodically sends logged data along with metadata (user's UUID) to a remote server.
 
-The delay intervals for transmissions are configurable to avoid detection based on outbound traffic patterns.
-
 ---
 
 ## 4. Persistence via Regedit
@@ -131,12 +129,9 @@ To bypass such monitoring, custom equivalents of these functions were implemente
 
 ### 9. To Do
 
-Planned improvements and additions to enhance stealth, reliability, and flexibility:
-
 Implement string obfuscation
 
 Add self-deletion mechanism
-Enable the binary to delete itself after execution, reducing forensic footprint and improving operational security.
 
 Unpacking mechanism (?)
 

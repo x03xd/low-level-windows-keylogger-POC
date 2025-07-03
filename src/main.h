@@ -10,6 +10,12 @@ DWORD g_NtCreateThreadExSSN;
 QWORD g_NtCreateThreadExSyscall;
 DWORD g_NtCloseSSN;
 QWORD g_NtCloseSyscall;
+DWORD g_NtWaitForSingleObjectSSN;
+QWORD g_NtWaitForSingleObjectSyscall;
+DWORD g_NtCreateMutantSSN;
+QWORD g_NtCreateMutantSyscall;
+DWORD g_NtReleaseMutantSSN;
+QWORD g_NtReleaseMutantSyscall;
 
 typedef NTSTATUS (NTAPI *PUSER_THREAD_START_ROUTINE)(
     _In_ PVOID ThreadParameter
@@ -81,6 +87,24 @@ extern NTSTATUS NtCreateThreadEx(
 
 extern NTSTATUS NtClose(
     IN HANDLE Handle
+);
+
+extern NTSTATUS NtWaitForSingleObject(
+    _In_ HANDLE Handle,
+    _In_ BOOLEAN Alertable,
+    _In_opt_ PLARGE_INTEGER Timeout
+);
+
+extern NTSTATUS NtCreateMutant(
+    PHANDLE MutantHandle,
+    ACCESS_MASK DesiredAccess,
+    POBJECT_ATTRIBUTES ObjectAttributes,
+    BOOLEAN InitialOwner
+);
+
+extern NTSTATUS NtReleaseMutant(
+    IN HANDLE MutantHandle,
+    OUT PLONG PreviousCount OPTIONAL
 );
 
 extern PPEB _getPeb(void);

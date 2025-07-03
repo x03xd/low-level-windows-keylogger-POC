@@ -3,6 +3,14 @@ section .data
     extern g_NtCreateThreadExSyscall
     extern g_NtCloseSSN
     extern g_NtCloseSyscall
+    extern g_NtCloseSSN
+    extern g_NtCloseSyscall
+    extern g_NtCreateMutantSSN
+    extern g_NtCreateMutantSyscall
+    extern g_NtWaitForSingleObjectSSN
+    extern g_NtWaitForSingleObjectSyscall
+    extern g_NtReleaseMutantSSN
+    extern g_NtReleaseMutantSyscall
 
 section .text
     global NtCreateThreadEx
@@ -17,6 +25,27 @@ section .text
         mov r10, rcx
         mov eax, [g_NtCloseSSN]
         jmp qword [g_NtCloseSyscall]
+        ret
+
+    global NtCreateMutant
+    NtCreateMutant:
+        mov r10, rcx
+        mov eax, [g_NtCreateMutantSSN]
+        jmp qword [g_NtCreateMutantSyscall]
+        ret
+
+    global NtWaitForSingleObject
+    NtWaitForSingleObject:
+        mov r10, rcx
+        mov eax, [g_NtWaitForSingleObjectSSN]
+        jmp qword [g_NtWaitForSingleObjectSyscall]
+        ret
+
+    global NtReleaseMutant
+    NtReleaseMutant:
+        mov r10, rcx
+        mov eax, [g_NtReleaseMutantSSN]
+        jmp qword [g_NtReleaseMutantSyscall]
         ret
 
     global _getPeb

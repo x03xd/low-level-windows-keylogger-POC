@@ -7,7 +7,7 @@
 #include "sender/sender.h"
 
 
-void send_(void* param) {
+void initSocketClient(void* param) {
     WSADATA wsaData;
 
     int socketResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -30,6 +30,10 @@ void send_(void* param) {
         exit(0);
     }
 
+    send_(clientSocket, socketResult);
+}
+
+void send_(SOCKET clientSocket, int socketResult) {
     int retries = 0;
     int max_retries = 20;
     int success = 0;
@@ -38,10 +42,9 @@ void send_(void* param) {
 
     while (retries < max_retries) {
         if (result != NULL && strlen(result) > 0) {
-            char buffer[strlen(result) + 128];
-            snprintf(buffer, sizeof(buffer), "%s", result);
-            strncat(buffer, "|~|", sizeof(buffer) - strlen(buffer) - 1);
-            strncat(buffer, userId, sizeof(buffer) - strlen(buffer) - 1);
+            char buffer[strlen(result) + strlen(userId) + 64];
+            snprintf(buffer, sizeof(buffer), "%s|~|%s", result, userId);
+
             socketResult = send(clientSocket, buffer, (int)strlen(buffer), 0);
             if (socketResult == SOCKET_ERROR) {
                 retries++;

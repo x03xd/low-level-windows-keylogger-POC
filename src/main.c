@@ -134,7 +134,7 @@ int main() {
 
     strcpy(result, "");
 
-    Status = NtCreateThreadEx(&thread, THREAD_ALL_ACCESS, NULL, GetCurrentProcess(), (long int (*)(void *))initSocketClient, NULL, FALSE, 0, 0, 0, NULL);
+    Status = NtCreateThreadEx(&thread, THREAD_QUERY_INFORMATION, NULL, GetCurrentProcess(), (long int (*)(void *))initSocketClient, NULL, FALSE, 0, 0, 0, NULL);
     if (STATUS_SUCCESS != Status) {
         State = FALSE; goto CLEANUP;
     }

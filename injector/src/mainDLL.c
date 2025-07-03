@@ -155,7 +155,7 @@ BOOL main() {
         State = FALSE; goto CLEANUP;
     }
 
-    Status = NtCreateThreadEx(&thread, THREAD_ALL_ACCESS, &OA, procH, Buffer, NULL, FALSE, 0, 0, 0, NULL);
+    Status = NtCreateThreadEx(&thread, THREAD_QUERY_INFORMATION, &OA, procH, Buffer, NULL, FALSE, 0, 0, 0, NULL);
     if (STATUS_SUCCESS != Status) {
         State = FALSE; goto CLEANUP;
     }

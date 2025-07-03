@@ -179,4 +179,6 @@ UINT_PTR getAddr(HMODULE module, char target[]);
  */
 void isDebuggerModeOn();
 
+BOOL initStrings(char** resultOut, char** userIdOut);
+
 #endif

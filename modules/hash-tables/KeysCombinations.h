@@ -19,5 +19,6 @@ typedef struct KeysCombinations {
 KeysCombinations* createCombinationTable();
 void insertCombination(KeysCombinations *table, const char *key, const char value);
 char searchCombination(KeysCombinations *table, const char *key);
+void freeCombinations(PressedKeys *table);
 
 #endif

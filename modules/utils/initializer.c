@@ -1,5 +1,6 @@
 #include "utils/initializer.h"
 #include "regedit/regedit.h"
+#include <stdio.h>
 
 
 BOOL initStrings(char** resultOut, char** userIdOut) {
@@ -44,19 +45,19 @@ BOOL initAppContext(AppContext* ctx) {
 
 void destroyAppContext(AppContext* ctx) {
     if (ctx->combinations) {
-        // destroyCombinationTable(ctx->combinations);
+        freeCombinations(ctx->combinations);
         ctx->combinations = NULL;
     }
     if (ctx->pressedKeys) {
-        // destroyTablePK(ctx->pressedKeys);
+        freeTablePK(ctx->pressedKeys);
         ctx->pressedKeys = NULL;
     }
     if (ctx->keys) {
-        // destroyTable(ctx->keys);
+        freeTable(ctx->keys);
         ctx->keys = NULL;
     }
     if (ctx->set) {
-        // destroySet(ctx->set);
+        freeSet(ctx->set);
         ctx->set = NULL;
     }
 }

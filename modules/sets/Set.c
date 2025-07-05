@@ -73,3 +73,9 @@ void freeSetEntries(Set *set) {
         }
     }
 }
+
+void freeSet(Set *set) {
+    freeSetEntries(set);
+    free(set->entries);
+    free(set);
+}

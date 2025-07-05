@@ -15,6 +15,7 @@ typedef struct Set {
 
 Set* createSet();
 void freeSetEntries(Set *set);
+void freeSet(Set *set);
 void add(Set *set, const char *key);
 int contains(Set *set, const char *key);
 

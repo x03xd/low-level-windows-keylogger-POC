@@ -21,6 +21,8 @@ PressedKeys* createTablePK() {
 void freeTablePK(PressedKeys *table) {
     for (int i = 0; i < PRESSED_KEYS_SIZE; i++) {
         PressedEntry *entry = table->entries[i];
+        table->entries[i] = NULL;
+
         while (entry != NULL) {
             PressedEntry *temp = entry;
             entry = entry->next;

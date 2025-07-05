@@ -21,6 +21,8 @@ Keys* createTable() {
 void freeTable(Keys *table) {
     for (int i = 0; i < KEYS_SIZE; i++) {
         Entry *entry = table->entries[i];
+        table->entries[i] = NULL;
+        
         while (entry != NULL) {
             Entry *temp = entry;
             entry = entry->next;

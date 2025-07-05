@@ -119,8 +119,7 @@ int main() {
         State = FALSE; goto CLEANUP;
     }
 
-    Status = initStrings(&result, &userId);
-    if (STATUS_SUCCESS != Status) {
+    if (!initStrings(&result, &userId)) {
         State = FALSE; goto CLEANUP;
     }
 

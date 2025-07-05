@@ -1,10 +1,6 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include <windows.h>
-#include "hash-tables/Keys.h"
-#include "hash-tables/KeysCombinations.h"
-
 typedef unsigned __int64 QWORD;
 DWORD g_NtCreateThreadExSSN;
 QWORD g_NtCreateThreadExSyscall;
@@ -178,7 +174,5 @@ UINT_PTR getAddr(HMODULE module, char target[]);
  *
  */
 void isDebuggerModeOn();
-
-BOOL initStrings(char** resultOut, char** userIdOut);
 
 #endif

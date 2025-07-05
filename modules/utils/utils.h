@@ -3,7 +3,7 @@
 
 #include <windows.h>
 #include <tlhelp32.h>
-#include "shared/shared.h"
+#include "include/shared.h"
 
 /**
  * @brief Checks if the given single-character string matches any of a predefined set of special characters.

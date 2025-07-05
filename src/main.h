@@ -1,6 +1,8 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+#include "include/peb.h"
+
 typedef unsigned __int64 QWORD;
 DWORD g_NtCreateThreadExSSN;
 QWORD g_NtCreateThreadExSyscall;
@@ -16,23 +18,6 @@ QWORD g_NtReleaseMutantSyscall;
 typedef NTSTATUS (NTAPI *PUSER_THREAD_START_ROUTINE)(
     _In_ PVOID ThreadParameter
 );
-
-typedef struct _PEB_LDR_DATA {
-    ULONG Length;
-    UCHAR Initialized;
-    HANDLE SsHandle;
-    LIST_ENTRY InLoadOrderModuleList;
-    LIST_ENTRY InMemoryOrderModuleList;
-    LIST_ENTRY InInitializationOrderModuleList;
-} PEB_LDR_DATA, *PPEB_LDR_DATA;
-
-typedef struct _PEB {
-    UCHAR Reserved1[2];
-    UCHAR BeingDebugged;
-    UCHAR Reserved2[1];
-    PVOID Reserved3[2];
-    PPEB_LDR_DATA Ldr;
-} PEB, *PPEB;
 
 typedef struct _PS_ATTRIBUTE {
     ULONG_PTR Attribute;

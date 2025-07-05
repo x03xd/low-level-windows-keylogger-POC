@@ -1,6 +1,5 @@
 #include "utils/initializer.h"
 #include "regedit/regedit.h"
-#include <stdio.h>
 
 
 BOOL initStrings(char** resultOut, char** userIdOut) {

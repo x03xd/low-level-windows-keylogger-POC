@@ -58,13 +58,13 @@ char searchCombination(KeysCombinations *table, const char *key) {
     return '\0';
 }
 
-void freeCombinations(PressedKeys *table) {
+void freeCombinations(KeysCombinations *table) {
     for (int i = 0; i < COMBINATIONS_KEYS_SIZE; i++) {
-        PressedEntry *entry = table->entries[i];
+        CombinationEntry *entry = table->entries[i];
         table->entries[i] = NULL;
         
         while (entry != NULL) {
-            PressedEntry *temp = entry;
+            CombinationEntry *temp = entry;
             entry = entry->next;
             free(temp->key);
             free(temp);

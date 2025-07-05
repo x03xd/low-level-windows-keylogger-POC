@@ -1,7 +1,7 @@
 #include <time.h>
 #include <string.h>
 #include <stdint.h>
-#include "utils/utils.h"
+#include "utils/common/utils.h"
 
 
 int containsChar(const char *key) {

@@ -1,6 +1,5 @@
 #include <stdbool.h>
 #include <stdio.h>
-#include <windows.h>
 #include <tlhelp32.h>
 #include "syscalls/syscalls.h"
 

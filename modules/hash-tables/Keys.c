@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "hash-tables/Keys.h"
-#include "utils/utils.h"
+#include "utils/common/utils.h"
 
 
 Keys* createTable() {

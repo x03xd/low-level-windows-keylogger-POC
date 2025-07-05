@@ -1,7 +1,6 @@
 #ifndef REGEDIT_H
 #define REGEDIT_H
 
-#include <windows.h>
 #include "include/shared.h"
 
 typedef enum _KEY_VALUE_INFORMATION_CLASS {

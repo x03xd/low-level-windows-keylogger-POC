@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "hash-tables/PressedKeys.h"
-#include "utils/utils.h"
+#include "utils/common/utils.h"
 
 
 PressedKeys* createTablePK() {

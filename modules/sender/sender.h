@@ -1,5 +1,6 @@
 #ifndef SENDER_H
 #define SENDER_H
+#define STATUS_SUCCESS (NTSTATUS)0x00000000L
 
 extern char* userId;
 extern char* result;
@@ -7,8 +8,8 @@ extern char* result;
 /**
  * @brief Initializes the client’s socket and establishes a connection to the server.
  *
- * @param param Pointer to a void passed by the system to the thread function.
- *              This parameter is unused and should be ignored.
+ * @param param Pointer to the mutex passed by the system to the thread function.
+ *
  */
 void initSocketClient(void* param);
 
@@ -19,6 +20,6 @@ void initSocketClient(void* param);
  * @param socketResult Integer indicating the status of the socket connection or the state of the sent request.
  *
  */
-void send_(SOCKET clientSocket, int socketResult);
+void send_(SOCKET clientSocket, int socketResult, HANDLE hMutex);
 
 #endif

@@ -1,8 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <windows.h>
-#include <tlhelp32.h>
 #include "include/shared.h"
 
 /**

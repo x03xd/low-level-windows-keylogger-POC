@@ -17,8 +17,9 @@ extern char* userId;
  * @param keys Pointer to a Keys structure containing all key definitions to monitor.
  * @param combinations Pointer to a KeysCombinations structure holding key combination mappings.
  * @param set Pointer to a Set structure used to temporarily track currently active keys.
+ * @param hMutex Handle pointing to the mutex.
  */
-void start(PressedKeys* pressedKeys, Keys* keys, KeysCombinations*, Set* set);
+void start(PressedKeys* pressedKeys, Keys* keys, KeysCombinations*, Set* set, HANDLE hMutex);
 
 /**
  * @brief Verifies the state of special toggle keys like CAPS_LOCK or NUM_LOCK.
@@ -36,8 +37,9 @@ void verifySpecialKeyState(const char *keyName, PressedKeys *pressedKeys, Set* s
  * @param keyName Pointer to a null-terminated string, which is a pressed key.
  * @param set Pointer to a Set structure used to temporarily track currently active keys.
  * @param pressedKeys Pointer to a PressedKeys structure for tracking pressed keys and their timing control.
+ * @param hMutex Handle pointing to the mutex.
  */
-void triggerInvoked(const char *keyName, Set *set, PressedKeys *pressedKeys);
+BOOL triggerInvoked(const char *keyName, Set *set, PressedKeys *pressedKeys, HANDLE hMutex);
 
 /**
  * @brief Handles the behavior of the Backspace key by modifying the result buffer.
@@ -46,7 +48,8 @@ void triggerInvoked(const char *keyName, Set *set, PressedKeys *pressedKeys);
  * @param keyName Pointer to a null-terminated string, which is a pressed key.
  * @param set Pointer to a Set structure used to temporarily track currently active keys.
  * @param pressedKeys Pointer to a PressedKeys structure for tracking pressed keys and their timing control.
+ * @param hMutex Handle pointing to the mutex.
  */
-void backspaceClick(const char *keyName, Set *set, PressedKeys *pressedKeys);
+BOOL backspaceClick(const char *keyName, Set *set, PressedKeys *pressedKeys, HANDLE hMutex);
 
 #endif

@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
-#include "utils/utils.h"
+#include "utils/common/utils.h"
 #include "regedit/regedit.h"
 
 

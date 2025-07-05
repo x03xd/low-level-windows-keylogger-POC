@@ -5,9 +5,11 @@
 #include <ws2tcpip.h>
 #include <windows.h>
 #include "sender/sender.h"
+#include "utils/mutex/mutex-handler.h"
 
 
 void initSocketClient(void* param) {
+    HANDLE hMutex = (HANDLE)param;
     WSADATA wsaData;
 
     int socketResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -30,10 +32,10 @@ void initSocketClient(void* param) {
         exit(0);
     }
 
-    send_(clientSocket, socketResult);
+    send_(clientSocket, socketResult, hMutex);
 }
 
-void send_(SOCKET clientSocket, int socketResult) {
+void send_(SOCKET clientSocket, int socketResult, HANDLE hMutex) {
     int retries = 0;
     int max_retries = 20;
     int success = 0;
@@ -42,8 +44,11 @@ void send_(SOCKET clientSocket, int socketResult) {
 
     while (retries < max_retries) {
         if (result != NULL && strlen(result) > 0) {
+
+            lockMutex(hMutex);
             char buffer[strlen(result) + strlen(userId) + 64];
             snprintf(buffer, sizeof(buffer), "%s|~|%s", result, userId);
+            unlockMutex(hMutex);
 
             socketResult = send(clientSocket, buffer, (int)strlen(buffer), 0);
             if (socketResult == SOCKET_ERROR) {
@@ -53,12 +58,16 @@ void send_(SOCKET clientSocket, int socketResult) {
                 }
                 wait_time = (wait_time * 2 > max_wait_time) ? max_wait_time : wait_time * 2;
             }
+
+            lockMutex(hMutex);
             result[0] = '\0';
+            unlockMutex(hMutex);
+
         }
         Sleep(wait_time);
     }
 
     closesocket(clientSocket);
     WSACleanup();
-    exit(0);
+    return;
 }

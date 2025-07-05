@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "sets/Set.h"
-#include "utils/utils.h"
+#include "utils/common/utils.h"
 
 
 Set* createSet() {

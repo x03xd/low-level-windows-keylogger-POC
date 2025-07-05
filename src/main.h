@@ -17,7 +17,8 @@ int main();
 /**
  * @brief Verifies if the program is running in debug mode.
  *
+ * @return TRUE if the process is being debugged, otherwise FALSE.
  */
-void isDebuggerModeOn();
+BOOL isDebuggerModeOn();
 
 #endif

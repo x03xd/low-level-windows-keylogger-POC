@@ -4,6 +4,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <windows.h>
+#include <stdint.h>
 #include "sender/sender.h"
 #include "utils/mutex/mutex-handler.h"
 
@@ -48,38 +49,65 @@ CLEANUP:
     exit(0);
 }
 
+char* prepareMessage(DWORD* outSize) {
+    if (!result || !userId) return NULL;
+
+    DWORD resultLen = (DWORD)strlen(result);
+    DWORD userIdLen = (DWORD)strlen(userId);
+    DWORD totalSize = 2 * sizeof(DWORD) + resultLen + userIdLen;
+
+    char* buffer = malloc(totalSize);
+    if (!buffer) return NULL;
+
+    memcpy(buffer, &resultLen, sizeof(DWORD));
+    memcpy(buffer + sizeof(DWORD), &userIdLen, sizeof(DWORD));
+    memcpy(buffer + 2 * sizeof(DWORD), result, resultLen);
+    memcpy(buffer + 2 * sizeof(DWORD) + resultLen, userId, userIdLen);
+
+    if (outSize) *outSize = totalSize;
+
+    return buffer;
+}
+
 void send_(SOCKET clientSocket, int socketResult, HANDLE hMutex) {
     int retries = 0;
     int max_retries = 20;
-    int success = 0;
     time_t wait_time = 5;
-    time_t max_wait_time = 16;
+    const time_t max_wait_time = 16;
 
     while (retries < max_retries) {
-        if (result != NULL && strlen(result) > 0) {
-
-            lockMutex(hMutex);
-            char buffer[strlen(result) + strlen(userId) + 64];
-            snprintf(buffer, sizeof(buffer), "%s|~|%s", result, userId);
+        lockMutex(hMutex);
+        if (result == NULL || strlen(result) == 0) {
             unlockMutex(hMutex);
-
-            socketResult = send(clientSocket, buffer, (int)strlen(buffer), 0);
-            if (socketResult == SOCKET_ERROR) {
-                retries++;
-                if (retries >= max_retries) {
-                    break;
-                }
-                wait_time = (wait_time * 2 > max_wait_time) ? max_wait_time : wait_time * 2;
-            }
-
-            lockMutex(hMutex);
-            result[0] = '\0';
-            unlockMutex(hMutex);
-
+            Sleep(wait_time);
+            continue;
         }
-        Sleep(wait_time);
-    }
 
+        DWORD totalSize;
+        char* buffer = prepareMessage(&totalSize);
+        unlockMutex(hMutex);
+
+        if (!buffer) break;
+
+        if (send(clientSocket, buffer, totalSize, 0) == SOCKET_ERROR) {
+            retries++;
+            if (retries >= max_retries) {
+                break;
+            }
+            wait_time = (wait_time * 2 > max_wait_time) ? max_wait_time : wait_time * 2;
+        }
+        free(buffer);
+
+        lockMutex(hMutex);
+        result[0] = '\0';
+        unlockMutex(hMutex);
+
+        retries = 0;
+        wait_time = 5;
+        Sleep(100);
+    }
+    
+    NtClose(hMutex);
     closesocket(clientSocket);
     WSACleanup();
     exit(0);

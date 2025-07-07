@@ -13,13 +13,13 @@ void initSocketClient(void* param) {
     WSADATA wsaData;
     SOCKET clientSocket = INVALID_SOCKET;
     int socketResult = 0;
-    bool wsaInitialized = false;
+    BOOL wsaInitialized = FALSE;
 
     socketResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (socketResult != 0) {
         goto CLEANUP;
     }
-    wsaInitialized = true;
+    wsaInitialized = TRUE;
 
     clientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (clientSocket == INVALID_SOCKET) {

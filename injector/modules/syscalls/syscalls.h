@@ -2,7 +2,6 @@
 #define SYSCALLS_H
 
 #include <stdbool.h>
-#include <tlhelp32.h>
 #include <windows.h>
 
 typedef unsigned __int64 QWORD;

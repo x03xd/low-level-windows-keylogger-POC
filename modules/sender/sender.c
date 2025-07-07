@@ -11,15 +11,19 @@
 void initSocketClient(void* param) {
     HANDLE hMutex = (HANDLE)param;
     WSADATA wsaData;
+    SOCKET clientSocket = INVALID_SOCKET;
+    int socketResult = 0;
+    bool wsaInitialized = false;
 
-    int socketResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    socketResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (socketResult != 0) {
-        exit(0);
+        goto CLEANUP;
     }
+    wsaInitialized = true;
 
-    SOCKET WSAAPI clientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    clientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (clientSocket == INVALID_SOCKET) {
-        exit(0);
+        goto CLEANUP;
     }
 
     struct sockaddr_in clientAddress;
@@ -29,10 +33,19 @@ void initSocketClient(void* param) {
 
     socketResult = connect(clientSocket, (struct sockaddr*)&clientAddress, sizeof(clientAddress));
     if (socketResult == SOCKET_ERROR) {
-        exit(0);
+        goto CLEANUP;
     }
 
     send_(clientSocket, socketResult, hMutex);
+
+CLEANUP:
+    if (clientSocket != INVALID_SOCKET) {
+        closesocket(clientSocket);
+    }
+    if (wsaInitialized) {
+        WSACleanup();
+    }
+    exit(0);
 }
 
 void send_(SOCKET clientSocket, int socketResult, HANDLE hMutex) {
@@ -69,5 +82,5 @@ void send_(SOCKET clientSocket, int socketResult, HANDLE hMutex) {
 
     closesocket(clientSocket);
     WSACleanup();
-    return;
+    exit(0);
 }

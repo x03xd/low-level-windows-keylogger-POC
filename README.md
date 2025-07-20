@@ -2,9 +2,9 @@
 
 This project was initially created as a learning exercise to deepen my understanding of:
 
-- 💻 C programming  
-- 🧠 Low-level system concepts  
-- 🛡️ Operating system security principles  
+- C programming  
+- Low-level system concepts  
+- Operating system security principles  
 
 The **keylogger** is a proof-of-concept developed entirely from scratch. The primary objective was to avoid using high-level **Win32 API** functions, which are commonly flagged by modern antimalware solutions, such as antivirus software and **EDRs** (Endpoint Detection and Response).
 
@@ -45,11 +45,11 @@ Any use of this code outside of lawful, explicit, and controlled environments is
 
 This repository consists of three components that work together as part of a malware deployment chain:
 
-- 🛠️ **Injector** – A standalone executable responsible for loading the DLL and injecting shellcode into a target process.  
-- 📥 **Keylogger** – A fully self-contained keylogger compiled as shellcode. It is injected and executed within the context of the target process.
-- 🌐 **Server** – A TCP-based server responsible for:
-  - 📦 Sending the keylogger payload to connecting clients,
-  - 📝 Collecting keystrokes sent back by infected machines, tagged with unique `userId`s for persistence and identification.
+- **Injector** – A standalone executable responsible for loading the DLL and injecting shellcode into a target process.  
+- **Keylogger** – A fully self-contained keylogger compiled as shellcode. It is injected and executed within the context of the target process.
+- **Server** – A TCP-based server responsible for:
+  - Sending the keylogger payload to connecting clients,
+  - Collecting keystrokes sent back by infected machines, tagged with unique `userId`s for persistence and identification.
 
 👉 **More details about the server component can be found here:** [server/README.md](https://github.com/x03xd/keyloggerServer/blob/main/README.md)
 
@@ -61,10 +61,10 @@ In this proof-of-concept, the **DLL proxying technique** is used as the method o
 
 In the demonstrated scenario, the target application was **Discord**. The attack involved **placing a malicious DLL** in Discord’s installation directory and exploiting the way Windows resolves and loads DLLs:
 
-1. 🔁 The original `libEGL.dll` (used legitimately by Discord) was **renamed** — e.g., to `libEGL-original-but-renamed.dll` — to preserve its functionality without breaking the application.
-2. 🧨 A **malicious DLL** was crafted and named `libEGL.dll`, matching the exact name expected by the application.
-3. 🧾 A `.def` file was added during compilation to **export and forward all functions** to the renamed original DLL (`libEGL-original-but-renamed.dll`). This maintains the normal behavior of the host application.
-4. 🎯 In the **`DllMain` entry point** of the malicious DLL, **custom code is executed after the legitimate application logic is initialized** — this ensures stability before proceeding with injection. At this point, the injector loads and executes the keylogger shellcode directly into Discord’s memory space.
+1. The original `libEGL.dll` (used legitimately by Discord) was **renamed** — e.g., to `libEGL-original-but-renamed.dll` — to preserve its functionality without breaking the application.
+2. A **malicious DLL** was crafted and named `libEGL.dll`, matching the exact name expected by the application.
+3. A `.def` file was added during compilation to **export and forward all functions** to the renamed original DLL (`libEGL-original-but-renamed.dll`). This maintains the normal behavior of the host application.
+4. In the **`DllMain` entry point** of the malicious DLL, **custom code is executed after the legitimate application logic is initialized** — this ensures stability before proceeding with injection. At this point, the injector loads and executes the keylogger shellcode directly into Discord’s memory space.
 
 📂 From the attacker's perspective, this works particularly well because **the Discord installation is often located in the user’s local app data directory**, such as:
 

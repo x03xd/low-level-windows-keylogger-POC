@@ -1,148 +1,129 @@
-# Keylogger Proof of Concept
+# Keylogger Proof of Concept Template
 
-This project was initially created as a learning exercise to deepen my understanding of:
+This project was created as a learning exercise to deepen understanding of:
 
 - C programming  
 - Low-level system concepts  
 - Operating system security principles  
 
-The **keylogger** is a proof-of-concept developed entirely from scratch. The primary objective was to avoid the use of high-level **Win32 API** functions, which are commonly detected by modern antimalware solutions such as **antivirus programs** and **EDRs** (Endpoint Detection and Response).
+The keylogger is a proof-of-concept developed from scratch. The main goal was to avoid using high-level Win32 API functions often flagged by modern antivirus and EDR solutions.
+
+---
+
+## Intended Use and Technique
+
+The intended deployment method in a real-world simulation or red team context is **DLL proxying**. This involves hijacking legitimate DLLs used by applications to inject functionality stealthily.
+
+This project is a technical template demonstrating core functionality under controlled conditions. Additional integration steps would be required for real-world usage and have been omitted deliberately to prevent misuse.
+
+Key missing steps include:  
+- Matching exported functions to preserve app behavior  
+- Ensuring proper initialization timing  
+
+These details are application-specific and partially excluded.
+
+---
+
+## Ethical Disclosure
+
+For ethical and legal reasons, full plug-and-play functionality is not implemented.  
+The project contains no self-propagation, stealth installation, persistence, or autonomous execution.
+
+It is intended solely for educational and research purposes.  
+Use outside lawful, explicit, controlled environments is strongly discouraged.
 
 ---
 
 ## 1. Core Components
 
-This repository consists of two components that work together as part of a malware deployment chain:
+This repository contains three components that form the malware deployment chain:
 
-- **Injector** – A standalone executable responsible for loading the DLL and injecting shellcode into a target process.  
-- **Keylogger** – A fully self-contained keylogger compiled as shellcode. It is injected and executed within the context of the target process.
+- **Injector** – Loads the DLL and injects shellcode into the target process.  
+- **Keylogger** – Self-contained keylogger shellcode executed in the target process context.  
+- **Server** – TCP server sending the keylogger payload and collecting logged keystrokes tagged by unique user IDs.
 
-Each component serves a distinct role and is described below.
+More on the server can be found here: [server/README.md](https://github.com/x03xd/keyloggerServer/blob/main/README.md)
 
 ---
 
 ## 2. How the Injector Works
 
-The injector is designed to operate in conjunction with **DLL-based malware techniques**, such as *DLL proxying*.
+This proof-of-concept uses DLL proxying to execute code inside a target process.
 
-While this project does not include a real-world deployment example, the intended usage is as follows:
+Example scenario: Discord. The attack replaces the `libEGL.dll` in Discord’s install folder:
 
-1. The injector loads a specially crafted DLL.
-2. The DLL then injects the compiled **keylogger shellcode** into a target process (same or remote).
-3. The shellcode runs in a separate thread within that process.
+1. The original `libEGL.dll` is renamed to preserve functionality.  
+2. A malicious DLL named `libEGL.dll` is placed instead.  
+3. The malicious DLL exports and forwards all functions to the original DLL to keep app behavior intact.  
+4. In the malicious DLL’s `DllMain`, after app initialization, injector code runs and injects the keylogger shellcode into Discord’s memory.
+
+From the attacker’s perspective, this works well because Discord is often installed in the user’s local app data directory (e.g., `C:\Users\<username>\AppData\Local\Discord\app-1.0.9200`), which doesn’t require elevated privileges to modify.
+
+An alternative technique is DLL load order hijacking, placing a malicious DLL with a common name in the application directory so it loads before the legitimate one if the full path isn’t specified.
 
 ---
 
 ## 3. How the Keylogger Works
 
-The injected shellcode contains a complete, self-contained keylogger. Its architecture:
+The injected shellcode implements a keylogger with:
 
-- **Main Thread** – Handles low-level keystroke capture.
-- **Secondary Thread** – Periodically sends logged data along with metadata (user's UUID) to a remote server.
-
----
-
-## 4. Persistence via Regedit
-
-Persistence is implemented through modifications to the Windows **registry** (`regedit`):
-
-- Each infected user is uniquely identified by a **generated UUID**.
-- Logged keystrokes are supposed to be sorted and stored on the server in files refering to UUID.
+- A main thread capturing low-level keystrokes.  
+- A secondary thread periodically sending logged data with a unique UUID to a remote TCP server.
 
 ---
 
-## 5. Used Evasion Techniques
+## 4. Persistence via Windows Registry
+
+Persistence is achieved by modifying the Windows registry:  
+
+- Each infected user has a unique UUID.  
+- Logged keystrokes are stored server-side in files indexed by these UUIDs.
+
+---
+
+## 5. Evasion Techniques
 
 ### Avoiding High-Level Win32 API
 
-The project avoids standard API calls and instead uses **indirect syscalls** to bypass EDR monitoring mechanisms.  
-EDRs typically hook functions inside `ntdll.dll` to detect suspicious behavior in user space.  
-This implementation jumps directly to unhooked system call stubs to evade detection.
-
----
+The project uses indirect syscalls instead of standard Win32 API calls to bypass EDR hooks often placed on common API functions inside `ntdll.dll`.
 
 ### Common Suspicious Syscalls
 
-Below are examples of system calls often flagged by EDRs — especially when used with specific parameters:
+Examples include:  
 
-#### `NtAllocateVirtualMemory`
+- `NtAllocateVirtualMemory` — Allocates executable memory, suspicious if in a remote process.  
+- `NtWriteVirtualMemory` — Writes shellcode to memory.  
+- `NtProtectVirtualMemory` — Changes memory protection to executable.  
+- `NtCreateThreadEx` — Starts a thread at injected shellcode.
 
-> Allocates memory in the current or remote process.
+### Dynamic Payload Staging
 
-- **Suspicious When**:
-  - Using `PAGE_EXECUTE_READWRITE`.
-  - Targeting a *remote* process.
+The keylogger payload is not hardcoded but downloaded at runtime from a remote server to avoid static detection.
 
-- **Used For**: Shellcode allocation during injection.
+### Custom API Implementations
 
----
-
-#### `NtWriteVirtualMemory`
-
-> Writes data into the memory space of another process.
-
-- **Suspicious When**:
-  - Writing binary payloads (e.g. shellcode).
-  - Address belongs to freshly allocated memory.
-
-- **Used For**: Payload injection.
+Functions like `GetModuleHandleW` and `GetProcAddress` are implemented manually by parsing PE headers and the Process Environment Block (PEB) to avoid detection.
 
 ---
 
-#### `NtProtectVirtualMemory`
+## 6. Versions and Environment
 
-> Changes memory protection on a memory region.
-
-- **Suspicious When**:
-  - Changing protection to `PAGE_EXECUTE_READ` or `PAGE_EXECUTE_READWRITE`.
-
-- **Used For**: Making shellcode executable after writing it.
+- **Windows versions tested:** Windows 10.0.19045.6093
+- **Compiler:** GCC 7.3.0 (MinGW-w64)  
+- **Assembler:** NASM 2.16.01 
+- **Shellcode converter tool:** [TheWover/donut](https://github.com/TheWover/donut)
 
 ---
 
-#### `NtCreateThreadEx`
+## 7. To Do
 
-> Creates a thread in the current or a remote process.
-
-- **Suspicious When**:
-  - Start address points to injected shellcode.
-  - Process handle refers to a different process.
-
-- **Used For**: Triggering execution of injected code.
+- Implement advanced string obfuscation to improve stealth  
+- Add a self-deletion mechanism to automatically remove the binary from disk **if a critical error prevents the malware from functioning properly** (e.g., incompatible environment).
+- Improve robustness with retry logic on critical operations  
 
 ---
 
-### Staging Payload
+## 8. Notes and Considerations
 
-Hardcoding a keylogger payload directly into the binary would be easily flagged by static analysis tools and antivirus engines due to its obvious malicious footprint.
-To evade detection, the payload is dynamically staged — downloaded at runtime from a remote server using low-level socket communication.
-The staging mechanism includes a retrying system to handle temporary network failures, ensuring higher reliability and operational resilience. 
-
----
-
-### Replacing common High-Level Win32 API with custom versions
-
-Common high-level Windows API functions like `GetModuleHandleW` and `GetProcAddress` are frequently monitored or hooked by EDR solutions.
-To bypass such monitoring, custom equivalents of these functions were implemented from scratch, directly parsing Windows internal structures such as the PE headers, PEB, and module lists.
-
----
-
-### 9. To Do
-
-Implement string obfuscation.
-
-Add self-deletion mechanism.
-
-Unpacking mechanism (?).
-
-Simulation of an attack using DLL proxying or a similar technique.
-
-Add smooth handling of certain operations with retry logic instead of exiting immediately.
-
-Replace user identification with UUID stored in the registry.
-
----
-
-### 10. Notes & Considerations
-
-Some functions are duplicated between the injector and keylogger components, as they are compiled separately and operate as independent entities.
+- Some functions are duplicated in the injector and keylogger as they are compiled separately and run independently.  
+- This project is for educational use only. Usage for malicious purposes is illegal and unethical.

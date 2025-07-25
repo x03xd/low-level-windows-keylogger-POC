@@ -48,8 +48,6 @@ More on the server can be found here: [server/README.md](https://github.com/x03x
 
 ## 2. How the Injector Works
 
-This proof-of-concept uses DLL proxying to execute code inside a target process.
-
 Example scenario: Discord. The attack replaces the `libEGL.dll` in Discord’s install folder:
 
 1. The original `libEGL.dll` is renamed to preserve functionality.  

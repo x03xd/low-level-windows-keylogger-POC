@@ -8,6 +8,8 @@ This project was created as a learning exercise to deepen understanding of:
 
 The keylogger is a proof-of-concept developed from scratch. The main goal was to avoid using high-level Win32 API functions often flagged by modern antivirus and EDR solutions.
 
+As this project was developed primarily for educational purposes, it should not be considered an example of production-quality code. I am not a specialist in C or low-level systems programming, and there are likely many areasboth in the implementation and in the keylogging mechanism itselfthat could be designed, optimized, or implemented more effectively by someone with greater experience in these domains.
+
 ---
 
 ## Intended Use and Technique
@@ -89,10 +91,10 @@ The project uses indirect syscalls instead of standard Win32 API calls to bypass
 
 Examples include:  
 
-- `NtAllocateVirtualMemory` — Allocates executable memory, suspicious if in a remote process.  
-- `NtWriteVirtualMemory` — Writes shellcode to memory.  
-- `NtProtectVirtualMemory` — Changes memory protection to executable.  
-- `NtCreateThreadEx` — Starts a thread at injected shellcode.
+- `NtAllocateVirtualMemory`  Allocates executable memory, suspicious if in a remote process.  
+- `NtWriteVirtualMemory`  Writes shellcode to memory.  
+- `NtProtectVirtualMemory`  Changes memory protection to executable.  
+- `NtCreateThreadEx`  Starts a thread at injected shellcode.
 
 ### Dynamic Payload Staging
 
@@ -118,7 +120,8 @@ Functions like `GetModuleHandleW` and `GetProcAddress` are implemented manually 
 - Implement advanced string obfuscation to improve stealth  
 - Add a self-deletion mechanism to automatically remove the binary from disk **if a critical error prevents the malware from functioning properly** (e.g., incompatible environment).
 - Improve robustness with retry logic on critical operations  
-
+- Change the network protocol to HTTPS in order to reduce traffic visibility and make it resemble standard HTTPS over port 443 with encryption.
+  
 ---
 
 ## 8. Notes and Considerations

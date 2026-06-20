@@ -4,3 +4,6 @@
 [submodule "keylogger"]
 	path = keylogger
 	url = https://github.com/x03xd/keylogger
+[submodule "keyloggerServer"]
+	path = keyloggerServer
+	url = https://github.com/x03xd/keyloggerServer
